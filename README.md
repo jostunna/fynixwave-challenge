@@ -1,1 +1,2 @@
-# fynixwave-challenge
+# Fynixwave-interview
+Fynixwave interview
