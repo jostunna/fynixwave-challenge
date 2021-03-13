@@ -39,7 +39,7 @@ app.post("/request-loan", (req, res) => {
     users[group][id]["payments"] = [];
     users[group][id]["interestPaid"] = "";
     users[group][id]["outstandingBalance"] = "";
-    users[group][id]["principlePaid"] = "";
+    users[group][id]["principalPaid"] = "";
     users[group][id]["monthlyPayment"] = "";
     users[group][id]["amountPaid"] = "";
     res.status(200).json({
@@ -68,7 +68,7 @@ app.post("/submit-payment", (req, res) => {
     const group = req.body["group"];
     let interestPaid;
     let outstandingBalance;
-    let principlePaid;
+    let principalPaid;
     let user = users[group][id];
     let loan = user["loan"];
     let amountPaid;
@@ -81,18 +81,18 @@ app.post("/submit-payment", (req, res) => {
     if (user["payments"].length) {
       let latestPaymentValue = user["payments"][user["payments"].length - 1];
       interestPaid = latestPaymentValue * INTEREST_RATE;
-      principlePaid = monthlyPayment - interestPaid;
-      outstandingBalance = latestPaymentValue - principlePaid;
+      principalPaid = monthlyPayment - interestPaid;
+      outstandingBalance = latestPaymentValue - principalPaid;
       user["payments"].push(Math.round(outstandingBalance));
     } else {
       interestPaid = loan * INTEREST_RATE;
-      principlePaid = monthlyPayment - interestPaid;
-      outstandingBalance = loan - principlePaid;
+      principalPaid = monthlyPayment - interestPaid;
+      outstandingBalance = loan - principalPaid;
       user["payments"].push(Math.round(outstandingBalance));
     }
     user["interestPaid"] = +interestPaid.toFixed(0);
     user["outstandingBalance"] = Math.round(outstandingBalance);
-    user["principlePaid"] = +principlePaid.toFixed(0);
+    user["principalPaid"] = +principalPaid.toFixed(0);
     user["monthlyPayment"] = +monthlyPayment.toFixed(0);
     amountPaid = user["payments"].length * monthlyPayment;
     user["amountPaid"] = +amountPaid.toFixed(0);
