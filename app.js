@@ -78,12 +78,19 @@ app.post("/submit-payment", (req, res) => {
       ((1 + INTEREST_RATE) ** MONTHS / ((1 + INTEREST_RATE) ** MONTHS - 1));
 
     interestPaid = loan * INTEREST_RATE;
+    if (user["payments"].length >= MONTHS) {
+      user["payments"].pop();
+    }
     if (user["payments"].length) {
-      let latestPaymentValue = user["payments"][user["payments"].length - 1];
-      interestPaid = latestPaymentValue * INTEREST_RATE;
+      let latestBalance = user["payments"][user["payments"].length - 1];
+      interestPaid = latestBalance * INTEREST_RATE;
       principalPaid = monthlyPayment - interestPaid;
-      outstandingBalance = latestPaymentValue - principalPaid;
-      user["payments"].push(Math.round(outstandingBalance));
+      outstandingBalance = latestBalance - principalPaid;
+      if (outstandingBalance < 0) {
+        user["payments"].push(0);
+      } else {
+        user["payments"].push(Math.round(outstandingBalance));
+      }
     } else {
       interestPaid = loan * INTEREST_RATE;
       principalPaid = monthlyPayment - interestPaid;
@@ -91,7 +98,8 @@ app.post("/submit-payment", (req, res) => {
       user["payments"].push(Math.round(outstandingBalance));
     }
     user["interestPaid"] = +interestPaid.toFixed(0);
-    user["outstandingBalance"] = Math.round(outstandingBalance);
+    user["outstandingBalance"] =
+      outstandingBalance < 0 ? 0 : Math.round(outstandingBalance);
     user["principalPaid"] = +principalPaid.toFixed(0);
     user["monthlyPayment"] = +monthlyPayment.toFixed(0);
     amountPaid = user["payments"].length * monthlyPayment;
