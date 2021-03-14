@@ -104,9 +104,16 @@ app.post("/submit-payment", (req, res) => {
     user["monthlyPayment"] = +monthlyPayment.toFixed(0);
     amountPaid = user["payments"].length * monthlyPayment;
     user["amountPaid"] = +amountPaid.toFixed(0);
-    res.status(200).json({
-      user,
-    });
+
+    if (user["outstandingBalance"]) {
+      res.status(200).json({
+        user,
+      });
+    } else {
+      res.json({
+        message: "no pending debt!",
+      });
+    }
   } catch (error) {
     res.json({
       message: "Please ensure you are registered!",
